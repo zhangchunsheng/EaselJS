@@ -28,7 +28,7 @@
 
 /**
  * A collection of Classes that are shared across all the CreateJS libraries.  The classes are included in the minified
- * files of each library and are available on the createsjs namespace directly.
+ * files of each library and are available on the createjs namespace directly.
  *
  * <h4>Example</h4>
  *
@@ -170,19 +170,6 @@ this.createjs = this.createjs||{};
 		this.removed = false;
 	}
 	var p = Event.prototype;
-
-	/**
-	 * <strong>REMOVED</strong>. Removed in favor of using `MySuperClass_constructor`.
-	 * See {{#crossLink "Utility Methods/extend"}}{{/crossLink}} and {{#crossLink "Utility Methods/promote"}}{{/crossLink}}
-	 * for details.
-	 *
-	 * There is an inheritance tutorial distributed with EaselJS in /tutorials/Inheritance.
-	 *
-	 * @method initialize
-	 * @protected
-	 * @deprecated
-	 */
-	// p.initialize = function() {}; // searchable for devs wondering where it is.
 
 // public methods:
 	/**

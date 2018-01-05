@@ -9,7 +9,7 @@
 		  type="text/css"/>
 	<script src="../../_assets/js/examples.js"></script>
 
-	<script src="../../lib/easeljs-NEXT.combined.js"></script>
+	<script src="../../lib/easeljs-NEXT.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
@@ -49,7 +49,7 @@
 		// append the generated spritesheet image for demo purposes:
 		document.body.appendChild(builder._data.images[0]);
 
-		createjs.Ticker.setFPS(30);
+		createjs.Ticker.framerate = 30;
 		createjs.Ticker.addEventListener("tick", stage);
 	}
 

@@ -248,20 +248,6 @@ this.createjs = this.createjs||{};
 	var p = Graphics.prototype;
 	var G = Graphics; // shortcut
 
-	/**
-	 * <strong>REMOVED</strong>. Removed in favor of using `MySuperClass_constructor`.
-	 * See {{#crossLink "Utility Methods/extend"}}{{/crossLink}} and {{#crossLink "Utility Methods/promote"}}{{/crossLink}}
-	 * for details.
-	 *
-	 * There is an inheritance tutorial distributed with EaselJS in /tutorials/Inheritance.
-	 *
-	 * @method initialize
-	 * @protected
-	 * @deprecated
-	 */
-	// p.initialize = function() {}; // searchable for devs wondering where it is.
-
-
 // static public methods:
 	/**
 	 * Returns a CSS compatible color string based on the specified RGB numeric color values in the format
@@ -392,14 +378,16 @@ this.createjs = this.createjs||{};
 // getter / setters:
 	/**
 	 * Use the {{#crossLink "Graphics/instructions:property"}}{{/crossLink}} property instead.
-	 * @method getInstructions
-	 * @return {Array}
-	 * @deprecated
+	 * @method _getInstructions
+	 * @protected
+	 * @return {Array} The instructions array, useful for chaining
 	 **/
-	p.getInstructions = function() {
+	p._getInstructions = function() {
 		this._updateInstructions();
 		return this._instructions;
 	};
+	// Graphics.getInstructions is @deprecated. Remove for 1.1+
+	p.getInstructions = createjs.deprecate(p._getInstructions, "Graphics.getInstructions");
 
 	/**
 	 * Returns the graphics instructions array. Each entry is a graphics command object (ex. Graphics.Fill, Graphics.Rect)
@@ -412,7 +400,7 @@ this.createjs = this.createjs||{};
 	 **/
 	try {
 		Object.defineProperties(p, {
-			instructions: { get: p.getInstructions }
+			instructions: { get: p._getInstructions }
 		});
 	} catch (e) {}
 
@@ -979,13 +967,6 @@ this.createjs = this.createjs||{};
 	p.drawPolyStar = function(x, y, radius, sides, pointSize, angle) {
 		return this.append(new G.PolyStar(x, y, radius, sides, pointSize, angle));
 	};
-
-	// TODO: deprecated.
-	/**
-	 * Removed in favour of using custom command objects with {{#crossLink "Graphics/append"}}{{/crossLink}}.
-	 * @method inject
-	 * @deprecated
-	 **/
 
 	/**
 	 * Appends a graphics command object to the graphics queue. Command objects expose an "exec" method
@@ -1586,12 +1567,14 @@ this.createjs = this.createjs||{};
 			if (this._stroke) {
 				// doesn't need to be re-applied if it hasn't changed.
 				if (this._strokeDash !== this._oldStrokeDash) {
-					this._oldStrokeDash = this._strokeDash;
 					instr.push(this._strokeDash);
 				}
 				if (this._strokeStyle !== this._oldStrokeStyle) {
-					this._oldStrokeStyle = this._strokeStyle;
 					instr.push(this._strokeStyle);
+				}
+				if (commit) {
+					this._oldStrokeStyle = this._strokeStyle;
+					this._oldStrokeDash = this._strokeDash;
 				}
 				instr.push(this._stroke);
 			}

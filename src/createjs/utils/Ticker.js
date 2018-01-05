@@ -119,7 +119,7 @@ this.createjs = this.createjs||{};
 // static events:
 	/**
 	 * Dispatched each tick. The event will be dispatched to each listener even when the Ticker has been paused using
-	 * {{#crossLink "Ticker/setPaused"}}{{/crossLink}}.
+	 * {{#crossLink "Ticker/paused:property"}}{{/crossLink}}.
 	 *
 	 * <h4>Example</h4>
 	 *
@@ -142,20 +142,9 @@ this.createjs = this.createjs||{};
 
 // public static properties:
 	/**
-	 * Deprecated in favour of {{#crossLink "Ticker/timingMode"}}{{/crossLink}}, and will be removed in a future version. If true, timingMode will
-	 * use {{#crossLink "Ticker/RAF_SYNCHED"}}{{/crossLink}} by default.
-	 * @deprecated Deprecated in favour of {{#crossLink "Ticker/timingMode"}}{{/crossLink}}.
-	 * @property useRAF
-	 * @static
-	 * @type {Boolean}
-	 * @default false
-	 **/
-	Ticker.useRAF = false;
-
-	/**
 	 * Specifies the timing api (setTimeout or requestAnimationFrame) and mode to use. See
-	 * {{#crossLink "Ticker/TIMEOUT"}}{{/crossLink}}, {{#crossLink "Ticker/RAF"}}{{/crossLink}}, and
-	 * {{#crossLink "Ticker/RAF_SYNCHED"}}{{/crossLink}} for mode details.
+	 * {{#crossLink "Ticker/TIMEOUT:property"}}{{/crossLink}}, {{#crossLink "Ticker/RAF:property"}}{{/crossLink}}, and
+	 * {{#crossLink "Ticker/RAF_SYNCHED:property"}}{{/crossLink}} for mode details.
 	 * @property timingMode
 	 * @static
 	 * @type {String}
@@ -224,7 +213,7 @@ this.createjs = this.createjs||{};
 	 * @property _inited
 	 * @static
 	 * @type {Boolean}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._inited = false;
 
@@ -232,7 +221,7 @@ this.createjs = this.createjs||{};
 	 * @property _startTime
 	 * @static
 	 * @type {Number}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._startTime = 0;
 
@@ -240,7 +229,7 @@ this.createjs = this.createjs||{};
 	 * @property _pausedTime
 	 * @static
 	 * @type {Number}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._pausedTime=0;
 
@@ -249,7 +238,7 @@ this.createjs = this.createjs||{};
 	 * @property _ticks
 	 * @static
 	 * @type {Number}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._ticks = 0;
 
@@ -258,7 +247,7 @@ this.createjs = this.createjs||{};
 	 * @property _pausedTicks
 	 * @static
 	 * @type {Number}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._pausedTicks = 0;
 
@@ -266,7 +255,7 @@ this.createjs = this.createjs||{};
 	 * @property _interval
 	 * @static
 	 * @type {Number}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._interval = 50;
 
@@ -274,7 +263,7 @@ this.createjs = this.createjs||{};
 	 * @property _lastTime
 	 * @static
 	 * @type {Number}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._lastTime = 0;
 
@@ -282,7 +271,7 @@ this.createjs = this.createjs||{};
 	 * @property _times
 	 * @static
 	 * @type {Array}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._times = null;
 
@@ -290,7 +279,7 @@ this.createjs = this.createjs||{};
 	 * @property _tickTimes
 	 * @static
 	 * @type {Array}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._tickTimes = null;
 
@@ -299,7 +288,7 @@ this.createjs = this.createjs||{};
 	 * @property _timerId
 	 * @static
 	 * @type {Number}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._timerId = null;
 	
@@ -309,7 +298,7 @@ this.createjs = this.createjs||{};
 	 * @property _raf
 	 * @static
 	 * @type {Boolean}
-	 * @protected
+	 * @private
 	 **/
 	Ticker._raf = true;
 	
@@ -317,49 +306,57 @@ this.createjs = this.createjs||{};
 // static getter / setters:
 	/**
 	 * Use the {{#crossLink "Ticker/interval:property"}}{{/crossLink}} property instead.
-	 * @method setInterval
+	 * @method _setInterval
+	 * @private
 	 * @static
 	 * @param {Number} interval
-	 * @deprecated
 	 **/
-	Ticker.setInterval = function(interval) {
+	Ticker._setInterval = function(interval) {
 		Ticker._interval = interval;
 		if (!Ticker._inited) { return; }
 		Ticker._setupTick();
 	};
+	// Ticker.setInterval is @deprecated. Remove for 1.1+
+	Ticker.setInterval = createjs.deprecate(Ticker._setInterval, "Ticker.setInterval");
 
 	/**
 	 * Use the {{#crossLink "Ticker/interval:property"}}{{/crossLink}} property instead.
-	 * @method getInterval
+	 * @method _getInterval
+	 * @private
 	 * @static
 	 * @return {Number}
-	 * @deprecated
 	 **/
-	Ticker.getInterval = function() {
+	Ticker._getInterval = function() {
 		return Ticker._interval;
 	};
+	// Ticker.getInterval is @deprecated. Remove for 1.1+
+	Ticker.getInterval = createjs.deprecate(Ticker._getInterval, "Ticker.getInterval");
 
 	/**
 	 * Use the {{#crossLink "Ticker/framerate:property"}}{{/crossLink}} property instead.
-	 * @method setFPS
+	 * @method _setFPS
+	 * @private
 	 * @static
 	 * @param {Number} value
-	 * @deprecated
 	 **/
-	Ticker.setFPS = function(value) {
-		Ticker.setInterval(1000/value);
+	Ticker._setFPS = function(value) {
+		Ticker._setInterval(1000/value);
 	};
+	// Ticker.setFPS is @deprecated. Remove for 1.1+
+	Ticker.setFPS = createjs.deprecate(Ticker._setFPS, "Ticker.setFPS");
 
 	/**
 	 * Use the {{#crossLink "Ticker/framerate:property"}}{{/crossLink}} property instead.
-	 * @method getFPS
+	 * @method _getFPS
 	 * @static
+	 * @private
 	 * @return {Number}
-	 * @deprecated
 	 **/
-	Ticker.getFPS = function() {
+	Ticker._getFPS = function() {
 		return 1000/Ticker._interval;
 	};
+	// Ticker.getFPS is @deprecated. Remove for 1.1+
+	Ticker.getFPS = createjs.deprecate(Ticker._getFPS, "Ticker.getFPS");
 
 	/**
 	 * Indicates the target time (in milliseconds) between ticks. Default is 50 (20 FPS).
@@ -379,8 +376,8 @@ this.createjs = this.createjs||{};
 	 **/
 	try {
 		Object.defineProperties(Ticker, {
-			interval: { get: Ticker.getInterval, set: Ticker.setInterval },
-			framerate: { get: Ticker.getFPS, set: Ticker.setFPS }
+			interval: { get: Ticker._getInterval, set: Ticker._setInterval },
+			framerate: { get: Ticker._getFPS, set: Ticker._setFPS }
 		});
 	} catch (e) { console.log(e); }
 
@@ -415,7 +412,7 @@ this.createjs = this.createjs||{};
 		}
 		Ticker.removeAllEventListeners("tick");
 		Ticker._timerId = Ticker._times = Ticker._tickTimes = null;
-		Ticker._startTime = Ticker._lastTime = Ticker._ticks = 0;
+		Ticker._startTime = Ticker._lastTime = Ticker._ticks = Ticker._pausedTime = 0;
 		Ticker._inited = false;
 	};
 
@@ -427,9 +424,10 @@ this.createjs = this.createjs||{};
 	 * the end of one tick and the end of the next. However, getMeasuredTickTime() returns 15ms. This indicates that 
 	 * there may be up to 35ms of "idle" time between the end of one tick and the start of the next.
 	 *
-	 * Example 2: With a target FPS of 30, getFPS() returns 10fps, which indicates an average of 100ms between the end of
-	 * one tick and the end of the next. However, getMeasuredTickTime() returns 20ms. This would indicate that something
-	 * other than the tick is using ~80ms (another script, DOM rendering, etc).
+	 * Example 2: With a target FPS of 30, {{#crossLink "Ticker/framerate:property"}}{{/crossLink}} returns 10fps, which
+	 * indicates an average of 100ms between the end of one tick and the end of the next. However, {{#crossLink "Ticker/getMeasuredTickTime"}}{{/crossLink}}
+	 * returns 20ms. This would indicate that something other than the tick is using ~80ms (another script, DOM
+	 * rendering, etc).
 	 * @method getMeasuredTickTime
 	 * @static
 	 * @param {Number} [ticks] The number of previous ticks over which to measure the average time spent in a tick.
@@ -441,7 +439,7 @@ this.createjs = this.createjs||{};
 		if (!times || times.length < 1) { return -1; }
 
 		// by default, calculate average for the past ~1 second:
-		ticks = Math.min(times.length, ticks||(Ticker.getFPS()|0));
+		ticks = Math.min(times.length, ticks||(Ticker._getFPS()|0));
 		for (var i=0; i<ticks; i++) { ttl += times[i]; }
 		return ttl/ticks;
 	};
@@ -460,32 +458,8 @@ this.createjs = this.createjs||{};
 		if (!times || times.length < 2) { return -1; }
 
 		// by default, calculate fps for the past ~1 second:
-		ticks = Math.min(times.length-1, ticks||(Ticker.getFPS()|0));
+		ticks = Math.min(times.length-1, ticks||(Ticker._getFPS()|0));
 		return 1000/((times[0]-times[ticks])/ticks);
-	};
-
-	/**
-	 * Use the {{#crossLink "Ticker/paused:property"}}{{/crossLink}} property instead.
-	 * @method setPaused
-	 * @static
-	 * @param {Boolean} value
-	 * @deprecated
-	 **/
-	Ticker.setPaused = function(value) {
-		// TODO: deprecated.
-		Ticker.paused = value;
-	};
-
-	/**
-	 * Use the {{#crossLink "Ticker/paused:property"}}{{/crossLink}} property instead.
-	 * @method getPaused
-	 * @static
-	 * @return {Boolean}
-	 * @deprecated
-	 **/
-	Ticker.getPaused = function() {
-		// TODO: deprecated.
-		return Ticker.paused;
 	};
 
 	/**
@@ -533,7 +507,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * @method _handleSynch
 	 * @static
-	 * @protected
+	 * @private
 	 **/
 	Ticker._handleSynch = function() {
 		Ticker._timerId = null;
@@ -548,7 +522,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * @method _handleRAF
 	 * @static
-	 * @protected
+	 * @private
 	 **/
 	Ticker._handleRAF = function() {
 		Ticker._timerId = null;
@@ -559,7 +533,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * @method _handleTimeout
 	 * @static
-	 * @protected
+	 * @private
 	 **/
 	Ticker._handleTimeout = function() {
 		Ticker._timerId = null;
@@ -570,12 +544,12 @@ this.createjs = this.createjs||{};
 	/**
 	 * @method _setupTick
 	 * @static
-	 * @protected
+	 * @private
 	 **/
 	Ticker._setupTick = function() {
 		if (Ticker._timerId != null) { return; } // avoid duplicates
 
-		var mode = Ticker.timingMode||(Ticker.useRAF&&Ticker.RAF_SYNCHED);
+		var mode = Ticker.timingMode;
 		if (mode == Ticker.RAF_SYNCHED || mode == Ticker.RAF) {
 			var f = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 			if (f) {
@@ -591,7 +565,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * @method _tick
 	 * @static
-	 * @protected
+	 * @private
 	 **/
 	Ticker._tick = function() {
 		var paused = Ticker.paused;
@@ -625,11 +599,11 @@ this.createjs = this.createjs||{};
 	/**
 	 * @method _getTime
 	 * @static
-	 * @protected
+	 * @private
 	 **/
-	var now = window.performance && (performance.now || performance.mozNow || performance.msNow || performance.oNow || performance.webkitNow);
+	var w=window, now=w.performance.now || w.performance.mozNow || w.performance.msNow || w.performance.oNow || w.performance.webkitNow;
 	Ticker._getTime = function() {
-		return ((now&&now.call(performance))||(new Date().getTime())) - Ticker._startTime;
+		return ((now&&now.call(w.performance))||(new Date().getTime())) - Ticker._startTime;
 	};
 
 

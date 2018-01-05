@@ -178,7 +178,7 @@ this.createjs = this.createjs||{};
 	 *     <li>Exporting SpriteSheets or HTML5 content from Adobe Flash/Animate supports the EaselJS SpriteSheet format.</li>
 	 *     <li>The popular <a href="https://www.codeandweb.com/texturepacker/easeljs" target="_blank">Texture Packer</a> has
 	 *     EaselJS support.
-	 *     <li>SWF animations in Adobe Flash/Animate can be exported to SpriteSheets using <a href="http://createjs.com/zoe" target="_blank"></a></li>
+	 *     <li>SWF animations in Adobe Flash/Animate can be exported to SpriteSheets using <a href="http://createjs.com/zoe" target="_blank">Zo&euml;</a></li>
 	 * </ul>
 	 *
 	 * <h3>Cross Origin Issues</h3>
@@ -193,7 +193,7 @@ this.createjs = this.createjs||{};
 	 * You can get around this by setting `crossOrigin` property on your images before passing them to EaselJS, or
 	 * setting the `crossOrigin` property on PreloadJS' LoadQueue or LoadItems.
 	 *
-	 * 		var image = new Image();
+	 * 		var img = new Image();
 	 * 		img.crossOrigin="Anonymous";
 	 * 		img.src = "http://server-with-CORS-support.com/path/to/image.jpg";
 	 *
@@ -362,13 +362,15 @@ this.createjs = this.createjs||{};
 // getter / setters:
 	/**
 	 * Use the {{#crossLink "SpriteSheet/animations:property"}}{{/crossLink}} property instead.
-	 * @method getAnimations
+	 * @method _getAnimations
+	 * @protected
 	 * @return {Array}
-	 * @deprecated
 	 **/
-	p.getAnimations = function() {
+	p._getAnimations = function() {
 		return this._animations.slice();
 	};
+	// SpriteSheet.getAnimations is @deprecated. Remove for 1.1+
+	p.getAnimations = createjs.deprecate(p._getAnimations, "SpriteSheet.getAnimations");
 
 	/**
 	 * Returns an array of all available animation names available on this sprite sheet as strings.
@@ -378,7 +380,7 @@ this.createjs = this.createjs||{};
 	 **/
 	try {
 		Object.defineProperties(p, {
-			animations: { get: p.getAnimations }
+			animations: { get: p._getAnimations }
 		});
 	} catch (e) {}
 
@@ -598,7 +600,7 @@ this.createjs = this.createjs||{};
 		
 		imgLoop:
 		for (var i=0, imgs=this._images; i<imgs.length; i++) {
-			var img = imgs[i], imgW = img.width, imgH = img.height;
+			var img = imgs[i], imgW = (img.width||img.naturalWidth), imgH = (img.height||img.naturalHeight);
 
 			var y = margin;
 			while (y <= imgH-margin-frameHeight) {

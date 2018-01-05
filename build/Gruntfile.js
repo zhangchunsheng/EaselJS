@@ -8,17 +8,18 @@ module.exports = function (grunt) {
 
 				// Default values
 				version: 'NEXT',
+				fileVersion: "-<%= version %>",
 				name: 'easeljs',
 
 				// Setup doc names / paths.
-				docsName: '<%= pkg.name %>_docs-<%= version %>',
+				docsName: '<%= pkg.name %>_docs<%= fileVersion %>',
 				docsZip: "<%= docsName %>.zip",
 
 				// Setup watch to watch the source and rebuild when it changes.  Also livereload
 				watch: {
 					js: {
-						files: [getConfigValue('easel_source'),
-							getConfigValue('gl_source'),
+						files: [
+							getConfigValue('easel_source'),
 							getConfigValue('watch_exclude_files')
 						],
 						tasks: ['sourceBuild'],
@@ -63,8 +64,7 @@ module.exports = function (grunt) {
 					},
 					build: {
 						files: {
-							'output/<%= pkg.name.toLowerCase() %>-<%= version %>.min.js': getConfigValue('easel_source'),
-							'output/webgl-<%= version %>.min.js': getConfigValue('gl_source')
+							'output/<%= pkg.name.toLowerCase() %><%= fileVersion %>.min.js': getConfigValue('easel_source')
 						}
 					}
 				},
@@ -103,16 +103,11 @@ module.exports = function (grunt) {
 					},
 					build: {
 						files: {
-							'output/<%= pkg.name.toLowerCase() %>-<%= version %>.combined.js': combineSource(
+							'output/<%= pkg.name.toLowerCase() %><%= fileVersion %>.js': combineSource(
 									[
 										{cwd: '', config:'config.json', source:'easel_source'}
 									]
-							),
-							'output/webgl-<%= version %>.combined.js': combineSource(
-									[
-										{cwd: '', config:'config.json', source:'gl_source'}
-									]
-							),
+							)
 						}
 					}
 				},
@@ -181,7 +176,7 @@ module.exports = function (grunt) {
 					},
 					src: {
 						files: [
-							{expand: true, cwd:'./output/', src: '*<%=version %>*.js', dest: '../lib/'}
+							{expand: true, cwd:'./output/', src: '*<%=fileVersion %>*.js', dest: '../lib/'}
 						]
 					}
 				},
@@ -273,7 +268,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-sass');
-	grunt.loadNpmTasks('grunt-contrib-clean')
+	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadTasks('tasks/');
@@ -314,6 +309,7 @@ module.exports = function (grunt) {
 	 */
 	grunt.registerTask('setVersion', function () {
 		grunt.config.set('version', grunt.config.get('pkg').version);
+		grunt.config.set("fileVersion", "");
 	});
 
 	/**

@@ -6,10 +6,13 @@ module.exports = function (grunt) {
 			jasmine: {
 				run: {
 					src: [
-						'../lib/easeljs-NEXT.combined.js'
+						'../lib/easeljs-NEXT.js',
+						'../src/easeljs/display/DisplayObject.js',
+						'../src/easeljs/display/StageGL.js'
 					],
-					
+
 					options: {
+						styles: 'styles/styles.css',
 						specs: 'spec/*Spec.js',
 						helpers: [
 							'spec/Helpers.js',
@@ -19,7 +22,8 @@ module.exports = function (grunt) {
 							'../_assets/libs/tweenjs-NEXT.min.js',
 							'../_assets/libs/preloadjs-NEXT.min.js'
 						],
-						host : 'http://127.0.0.1:<%=connect.phantom.options.port%>/'
+						host : 'http://127.0.0.1:<%=connect.phantom.options.port%>/',
+						styles: "styles.css"
 					}
 				}
 			},
@@ -48,7 +52,7 @@ module.exports = function (grunt) {
 							}
 						}, '..'],
 						useAvailablePort: true,
-						port: 8000,
+						port: 8000
 					}
 				}
 			},

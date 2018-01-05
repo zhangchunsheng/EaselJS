@@ -3,12 +3,15 @@
 <head>
 	<title>EaselJS demo: Dragging</title>
 	<link href="../_shared/demo.css" rel="stylesheet" type="text/css">
-	<script src="http://code.createjs.com/easeljs-0.8.1.min.js"></script>
+	<script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
 	<script>
 		var stage, output;
 		
 		function init() {
 			stage = new createjs.Stage("demoCanvas");
+
+			// For mobile devices.
+			createjs.Touch.enable(stage);
 			
 			// this lets our drag continue to track the mouse even when it leaves the canvas:
 			// play with commenting this out to see the difference.
@@ -25,11 +28,17 @@
 			dragger.x = dragger.y = 100;
 			dragger.addChild(circle, label);
 			stage.addChild(dragger);
+
+			dragger.on("mousedown", function (evt) {
+				// keep a record on the offset between the mouse position and the container
+				// position. currentTarget will be the container that the event listener was added to:
+				evt.currentTarget.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
+			});
 			
 			dragger.on("pressmove",function(evt) {
-				// currentTarget will be the container that the event listener was added to:
-				evt.currentTarget.x = evt.stageX;
-				evt.currentTarget.y = evt.stageY;
+				// Calculate the new X and Y based on the mouse new position plus the offset.
+				evt.currentTarget.x = evt.stageX + evt.currentTarget.offset.x;
+				evt.currentTarget.y = evt.stageY + evt.currentTarget.offset.y;
 				// make sure to redraw the stage to show the change:
 				stage.update();   
 			});

@@ -89,14 +89,13 @@ describe("DisplayList", function () {
 		expect(this.stage.getConcatenatedMatrix()).not.toBe(null);
 	});
 
-	it("stage.getNumChildren() should be 2", function () {
-		this.stage.addChild(new createjs.Sprite());
-		this.stage.addChild(new createjs.Sprite());
-		expect(this.stage.getNumChildren()).toBe(2);
+	it("stage.numChildren should be 2", function () {
+		this.stage.addChild(new createjs.Sprite(), new createjs.Sprite());
+		expect(this.stage.numChildren).toBe(2);
 	});
 
-	it("stage.getStage() should eq stage.", function () {
-		expect(this.stage.getStage()).toBe(this.stage);
+	it("stage.stage should eq stage.", function () {
+		expect(this.stage.stage).toBe(this.stage);
 	});
 
 	describe("*.clone() should work", function () {
@@ -214,7 +213,7 @@ describe("DisplayList", function () {
 				expect(clone[n]).toBe(props[n]);
 			}
 		});
-	})
+	});
 	it("getTransformedBounds() should work", function () {
 		var bmp = new createjs.Bitmap(this.img);
 		this.stage.addChild(bmp);
@@ -599,15 +598,13 @@ describe("DisplayList", function () {
 
 		var img = new Image();
 		img.onload = function () {
+			data.images = [img];
 			var ss = new createjs.SpriteSheet(data);
 			var text = new createjs.BitmapText("abcdef\nghijklm\nnopqr\nstuvw\nxyz!,.?", ss);
 			_this.stage.addChild(text);
 
-			// Need to delay this for Safari.
-			setTimeout(function () {
-				_this.stage.update();
-				_this.compareBaseLine("assets/BitmapText.png", done, expect);
-			}, 5);
+			_this.stage.update();
+			_this.compareBaseLine("assets/BitmapText.png", done, expect);
 		};
 		img.onerror = function () {
 			fail(img.src + ' failed to load');
@@ -715,7 +712,7 @@ describe("DisplayList", function () {
 		this.compareBaseLine("assets/mask.png", done, expect, 0.01);
 	});
 
-	describe("PrelaodJS can be used to load image assets", function () {
+	describe("PreloadJS can be used to load image assets", function () {
 		beforeEach(function (done) {
 			this.loader = new createjs.LoadQueue(true);
 			this.loader.on("complete", function () {
@@ -742,4 +739,5 @@ describe("DisplayList", function () {
 			this.compareBaseLine("assets/PrelaodJSLoadedBitmap.png", done, expect);
 		});
 	});
+
 });

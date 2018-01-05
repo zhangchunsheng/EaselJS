@@ -149,29 +149,16 @@ this.createjs = this.createjs||{};
 		}
 	}
 	var p = ButtonHelper.prototype;
-
-	/**
-	 * <strong>REMOVED</strong>. Removed in favor of using `MySuperClass_constructor`.
-	 * See {{#crossLink "Utility Methods/extend"}}{{/crossLink}} and {{#crossLink "Utility Methods/promote"}}{{/crossLink}}
-	 * for details.
-	 *
-	 * There is an inheritance tutorial distributed with EaselJS in /tutorials/Inheritance.
-	 *
-	 * @method initialize
-	 * @protected
-	 * @deprecated
-	 */
-	// p.initialize = function() {}; // searchable for devs wondering where it is.
-
 	
 // getter / setters:
 	/**
 	 * Use the {{#crossLink "ButtonHelper/enabled:property"}}{{/crossLink}} property instead.
 	 * @method setEnabled
-	 * @param {Boolean} value
-	 * @deprecated
+	 * @param {Boolean} value The enabled property to set the instance to.
+	 * @[rptected
+	 * @protected
 	 **/
-	p.setEnabled = function(value) { // TODO: deprecated.
+	p._setEnabled = function(value) {
 		if (value == this._enabled) { return; }
 		var o = this.target;
 		this._enabled = value;
@@ -191,15 +178,20 @@ this.createjs = this.createjs||{};
 			if (o.__reset) { o._reset = o.__reset; delete(o.__reset); }
 		}
 	};
+	// ButtonHelper.setEnabled is @deprecated. Remove for 1.1+
+	p.setEnabled = createjs.deprecate(p._setEnabled, "ButtonHelper.setEnabled");
+
 	/**
 	 * Use the {{#crossLink "ButtonHelper/enabled:property"}}{{/crossLink}} property instead.
 	 * @method getEnabled
+	 * @protected
 	 * @return {Boolean}
-	 * @deprecated
 	 **/
-	p.getEnabled = function() {
+	p._getEnabled = function() {
 		return this._enabled;
 	};
+	// ButtonHelper.getEnabled is @deprecated. Remove for 1.1+
+	p.getEnabled = createjs.deprecate(p._getEnabled, "ButtonHelper.getEnabled");
 
 	/**
 	 * Enables or disables the button functionality on the target.
@@ -208,7 +200,7 @@ this.createjs = this.createjs||{};
 	 **/
 	try {
 		Object.defineProperties(p, {
-			enabled: { get: p.getEnabled, set: p.setEnabled }
+			enabled: { get: p._getEnabled, set: p._setEnabled }
 		});
 	} catch (e) {} // TODO: use Log
 
